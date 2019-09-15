@@ -23,6 +23,7 @@ module Heist.Internal.Types
 ------------------------------------------------------------------------------
 import           Data.HashMap.Strict (HashMap)
 import           Data.Text (Text)
+import qualified Data.HashSet as Set
 
 #if !MIN_VERSION_base(4,8,0)
 import           Control.Applicative
@@ -178,8 +179,43 @@ data HeistConfig m = HeistConfig
         -- ^ Whether to throw an error when a tag wih the heist namespace does
         -- not correspond to a bound splice.  When not using a namespace, this
         -- flag is ignored.
+    , _hcKnownTags     :: Set.HashSet Text
     }
 
+defaultKnownTags :: Set.HashSet Text
+defaultKnownTags = Set.fromList [
+    "a", "abbr", "acronym", "address", "applet", "area", "article", "aside",
+        "audio",
+    "b", "base", "basefont", "bdi", "bdo", "big", "blockquote", "body", "br",
+        "button",
+    "canvas", "caption", "center", "cite", "code", "col", "colgroup",
+        "command",
+    "data", "datalist", "dd", "del", "details", "dfn", "dialog", "dir", "div",
+        "dl", "dt",
+    "em", "embed",
+    "fieldset", "figcaption", "figure", "font", "footer", "form", "frame",
+        "frameset",
+    "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "hr",
+        "html",
+    "i", "iframe", "img", "input", "ins", "isindex",
+    "kbd", "keygen",
+    "label", "legend", "li", "link",
+    "main", "map", "mark", "menu", "menuitem", "meta", "meter",
+    "nav", "noframes", "noscript",
+    "object", "ol", "optgroup", "option", "output",
+    "p", "param", "pre", "progress",
+    "q",
+    "rb", "rp", "rt", "rtc", "ruby",
+    "s", "samp", "script", "section", "select", "small", "source", "span",
+        "strike", "strong", "style", "sub", "summary", "sup",
+    "table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead",
+        "time", "title", "tr", "track", "tt",
+    "u", "ul",
+    "var", "video",
+    "wbr",
+
+    "svg"
+    ]
 
 ------------------------------------------------------------------------------
 -- | Lens for the SpliceConfig
@@ -215,6 +251,18 @@ hcErrorNotBound
 hcErrorNotBound = lens _hcErrorNotBound setter
   where
     setter hc v = hc { _hcErrorNotBound = v }
+
+
+------------------------------------------------------------------------------
+-- | Lens for the known tags.
+-- :: Simple Lens (HeistConfig m) (HashSet Text)
+hcKnownTags
+    :: Functor f
+    => (Set.HashSet Text -> f (Set.HashSet Text))
+    -> HeistConfig m -> f (HeistConfig m)
+hcKnownTags = lens _hcKnownTags setter
+  where
+    setter hc v = hc { _hcKnownTags = v }
 
 
 ------------------------------------------------------------------------------

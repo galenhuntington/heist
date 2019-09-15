@@ -273,11 +273,15 @@ codeGen l = V.foldr mappend mempty $!
 lookupSplice :: Text -> HeistT n IO (Maybe (Splice n))
 lookupSplice nm = do
     pre <- getsHS _splicePrefix
+    known <- getsHS _knownTags
     res <- getsHS (H.lookup nm . _compiledSpliceMap)
-    if isNothing res && T.isPrefixOf pre nm && not (T.null pre)
+    if isNothing res && (
+         if T.null pre then not $ S.member nm known else T.isPrefixOf pre nm)
       then do
           tellSpliceError $ "No splice bound for " `mappend` nm
           return Nothing
+          -- return $ return $ return $ return $
+          -- error ("Splice " <> T.unpack nm <> " not bound.")
       else return res
 
 

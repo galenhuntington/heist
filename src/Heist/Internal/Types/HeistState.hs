@@ -45,6 +45,7 @@ import           Data.ByteString.Char8         (ByteString)
 import           Data.DList                    (DList)
 import           Data.HashMap.Strict           (HashMap)
 import qualified Data.HashMap.Strict           as H
+import           Data.HashSet                  (HashSet)
 import           Data.HeterogeneousEnvironment (HeterogeneousEnvironment)
 import qualified Data.HeterogeneousEnvironment as HE
 import           Data.Map.Syntax
@@ -284,9 +285,10 @@ data HeistState m = HeistState {
     , _spliceErrors        :: [SpliceError]
 
     -- | Whether to throw an error when a tag wih the heist namespace does not
-    -- correspond to a bound splice.  When not using a namespace, this flag is
-    -- ignored.
+    -- correspond to a bound splice.  When not using a namespace, the set of
+    -- known tags is used.
     , _errorNotBound       :: Bool
+    , _knownTags           :: HashSet Text
     , _numNamespacedTags   :: Int
 #if MIN_VERSION_base(4,7,0)
 } deriving (Typeable)
