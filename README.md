@@ -1,3 +1,7 @@
+This is an experimental modification of the Heist module to support
+errors for unbound tags even in the absence of namespacing.
+
+
 # Heist
 
 [![Build Status](https://travis-ci.org/snapframework/heist.svg?branch=master)](https://travis-ci.org/snapframework/heist)
