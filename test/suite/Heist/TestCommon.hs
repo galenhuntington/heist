@@ -8,7 +8,6 @@ import           Control.Monad.Trans.Except (ExceptT(ExceptT), runExceptT)
 import           Data.ByteString.Char8      (ByteString)
 import qualified Data.ByteString.Char8      as B
 import           Data.Maybe
-import           Data.Monoid
 
 
 ------------------------------------------------------------------------------
@@ -39,7 +38,7 @@ loadT baseDir a b c d = runExceptT $ do
     let sc = SpliceConfig (defaultInterpretedSplices `mappend` a)
                           (defaultLoadTimeSplices `mappend` b) c d
                           [loadTemplates baseDir] (const True)
-    ExceptT $ initHeist $ HeistConfig sc "" False
+    ExceptT $ initHeist $ HeistConfig sc "" False defaultKnownTags
 
 
 ------------------------------------------------------------------------------
@@ -53,7 +52,7 @@ loadIO baseDir a b c d = runExceptT $ do
     let sc = SpliceConfig (defaultInterpretedSplices >> a)
                           (defaultLoadTimeSplices >> b) c d
                           [loadTemplates baseDir] (const True)
-    ExceptT $ initHeist $ HeistConfig sc "" False
+    ExceptT $ initHeist $ HeistConfig sc "" False defaultKnownTags
 
 
 ------------------------------------------------------------------------------
@@ -63,7 +62,7 @@ loadHS baseDir = do
         let sc = SpliceConfig defaultInterpretedSplices
                               defaultLoadTimeSplices mempty mempty
                               [loadTemplates baseDir] (const True)
-        ExceptT $ initHeist $ HeistConfig sc "" False
+        ExceptT $ initHeist $ HeistConfig sc "" False defaultKnownTags
     either (error . concat) return etm
 
 
@@ -76,7 +75,7 @@ loadEmpty a b c d = do
     let sc = SpliceConfig (defaultInterpretedSplices `mappend` a)
                           (defaultLoadTimeSplices `mappend` b) c d mempty
                           (const True)
-    res <- initHeist $ HeistConfig sc "" False
+    res <- initHeist $ HeistConfig sc "" False defaultKnownTags
     either (error . concat) return res
 
 

@@ -702,7 +702,7 @@ withSplices :: Monad n
 withSplices splice splices runtimeAction =
     withLocalSplices splices' mempty splice
   where
-    splices' = mapV ($runtimeAction) splices
+    splices' = mapV ($ runtimeAction) splices
 
 
 ------------------------------------------------------------------------------

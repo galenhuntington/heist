@@ -1,5 +1,5 @@
 name:           heist
-version:        1.2.1
+version:        1.2.2
 synopsis:       An Haskell template system supporting both HTML5 and XML.
 description:
     Heist is a powerful template system that supports both HTML5 and XML.
@@ -32,16 +32,14 @@ homepage:       http://snapframework.com/
 category:       Web, Snap
 
 Tested-With:
-  GHC == 7.4.2,
-  GHC == 7.6.3,
-  GHC == 7.8.4,
-  GHC == 7.10.3,
   GHC == 8.0.2,
   GHC == 8.2.2,
   GHC == 8.4.4,
-  GHC == 8.6.3,
-  GHC == 8.8.3,
-  GHC == 8.10.1
+  GHC == 8.6.5,
+  GHC == 8.8.4,
+  GHC == 8.10.7,
+  GHC == 9.0.2,
+  GHC == 9.2.1
 
 extra-source-files:
   .ghci,
@@ -150,7 +148,7 @@ Library
     Heist.Splices.Cache,
     Heist.Splices.Html,
     Heist.Splices.Ignore,
-    Heist.Splices.Json,
+    -- Heist.Splices.Json,
     Heist.Splices.Markdown,
     Heist.TemplateDirectory
 
@@ -162,40 +160,34 @@ Library
     Heist.Interpreted.Internal
 
   build-depends:
-    aeson                      >= 0.6     && < 1.6,
-    attoparsec                 >= 0.10    && < 0.14,
-    base                       >= 4.5     && < 4.16,
+    -- aeson                      >= 2.0     && < 2.1,
+    attoparsec                 >= 0.10    && < 0.15,
+    base                       >= 4.5     && < 4.17,
     blaze-builder              >= 0.2     && < 0.5,
     blaze-html                 >= 0.4     && < 0.10,
-    bytestring                 >= 0.9     && < 0.11,
+    bytestring                 >= 0.9     && < 0.12,
     containers                 >= 0.2     && < 0.7,
     directory                  >= 1.1     && < 1.4,
     directory-tree             >= 0.10    && < 0.13,
-    dlist                      >= 0.5     && < 1.1,
+    dlist                      >= 1.0     && < 1.1,
     filepath                   >= 1.3     && < 1.5,
-    hashable                   >= 1.1     && < 1.4,
+    hashable                   >= 1.1     && < 1.5,
     lifted-base                >= 0.2     && < 0.3,
     map-syntax                 >= 0.3     && < 0.4,
     monad-control              >= 0.3     && < 1.1,
     mtl                        >= 2.0     && < 2.3,
     process                    >= 1.1     && < 1.7,
-    random                     >= 1.0.1.0 && < 1.3,
+    random                     >= 1.2     && < 1.3,
     text                       >= 0.10    && < 1.3,
-    time                       >= 1.1     && < 1.11,
+    time                       >= 1.1     && < 1.14,
     transformers               >= 0.3     && < 0.6,
     transformers-base          >= 0.4     && < 0.5,
     unordered-containers       >= 0.1.4   && < 0.3,
     vector                     >= 0.9     && < 0.13,
     xmlhtml                    >= 0.2.3.5 && < 0.3
 
-  if !impl(ghc >= 8.0)
-    build-depends: semigroups >= 0.16 && < 0.19
-
-  if impl(ghc >= 6.12.0)
-    ghc-options: -Wall -fwarn-tabs -funbox-strict-fields
-                 -fno-warn-unused-do-bind
-  else
-    ghc-options: -Wall -fwarn-tabs -funbox-strict-fields
+  ghc-options: -Wall -fwarn-tabs -funbox-strict-fields
+               -fno-warn-unused-do-bind
 
   Extensions:
     GeneralizedNewtypeDeriving,
@@ -222,11 +214,11 @@ Test-suite testsuite
   build-depends:
     HUnit                      >= 1.2      && < 2,
     QuickCheck                 >= 2        && < 2.15,
-    lens                       >= 4.3      && < 4.20,
+    lens                       >= 4.3      && < 5.2,
     test-framework             >= 0.4      && < 0.9,
     test-framework-hunit       >= 0.2.7    && < 0.4,
     test-framework-quickcheck2 >= 0.2.12.1 && < 0.4,
-    aeson,
+    -- aeson,
     attoparsec,
     base,
     bifunctors >= 5.3 && < 5.6,
@@ -253,12 +245,6 @@ Test-suite testsuite
     vector,
     xmlhtml
 
-  if !impl(ghc >= 8.0)
-    build-depends: semigroups >= 0.16 && < 0.19
-
-  if impl(ghc >= 7.8) && impl(ghc < 7.10)
-    build-depends: transformers-compat >= 0.3 && < 0.7
-
   ghc-options: -Wall -fwarn-tabs -funbox-strict-fields -threaded
   Extensions: OverloadedStrings
 
@@ -276,7 +262,7 @@ Benchmark benchmark
 
     -- Copied from regular dependencies:
 
-    aeson,
+    -- aeson,
     attoparsec,
     base,
     blaze-builder,
@@ -294,7 +280,7 @@ Benchmark benchmark
     mtl,
     process,
     random,
-    statistics                 >= 0.11    && < 0.16,
+    statistics                 >= 0.11    && < 0.17,
     text,
     time,
     transformers,
@@ -302,12 +288,6 @@ Benchmark benchmark
     unordered-containers,
     vector,
     xmlhtml
-
-  if !impl(ghc >= 8.0)
-    build-depends: semigroups >= 0.16 && < 0.19
-
-  if impl(ghc >= 7.8) && impl(ghc < 7.10)
-    build-depends: transformers-compat
 
   ghc-options: -Wall -fwarn-tabs -funbox-strict-fields -threaded
                -fno-warn-unused-do-bind -rtsopts

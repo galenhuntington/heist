@@ -388,15 +388,14 @@ instance Functor m => Functor (HeistT n m) where
 ------------------------------------------------------------------------------
 -- | Applicative instance
 instance (Monad m, Functor m) => Applicative (HeistT n m) where
-    pure = return
+    pure a = HeistT (\_ s -> return (a, s))
+    {-# INLINE pure #-}
     (<*>) = ap
 
 
 ------------------------------------------------------------------------------
 -- | Monad instance
 instance Monad m => Monad (HeistT n m) where
-    return a = HeistT (\_ s -> return (a, s))
-    {-# INLINE return #-}
     HeistT m >>= k = HeistT $ \r s -> do
         (a, s') <- m r s
         runHeistT (k a) r s'

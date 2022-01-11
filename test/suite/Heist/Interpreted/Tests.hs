@@ -12,7 +12,7 @@ module Heist.Interpreted.Tests
 ------------------------------------------------------------------------------
 import           Blaze.ByteString.Builder
 import           Control.Monad.State
-import           Data.Aeson
+-- import           Data.Aeson
 import           Data.ByteString.Char8                (ByteString)
 import qualified Data.ByteString.Char8                as B
 import qualified Data.ByteString.Lazy.Char8           as L
@@ -39,7 +39,7 @@ import           Heist.Internal.Types
 import           Heist.Interpreted.Internal
 import           Heist.Splices.Apply
 import           Heist.Splices.Ignore
-import           Heist.Splices.Json
+-- import           Heist.Splices.Json
 import           Heist.Splices.Markdown
 import           Heist.TestCommon
 import qualified Text.XmlHtml                         as X
@@ -71,8 +71,8 @@ tests = [ testProperty "heist/simpleBind"            simpleBindTest
         , testCase     "heist/ignore"                ignoreTest
         , testCase     "heist/lookupTemplateContext" lookupTemplateTest
         , testCase     "heist/attrSpliceContext"     attrSpliceContext
-        , testCase     "heist/json/values"           jsonValueTest
-        , testCase     "heist/json/object"           jsonObjectTest
+        -- , testCase     "heist/json/values"           jsonValueTest
+        -- , testCase     "heist/json/object"           jsonObjectTest
         , testCase     "heist/renderXML"             xmlNotHtmlTest
         ]
 
@@ -300,13 +300,16 @@ renderTest templateName expectedResult = do
     check ts expectedResult
 
   where
+    {-
     bind txt = bindJson v
       where
         v :: Value
         v = fromJust $ decode txt
+    -}
 
     check ts0 str = do
-        let splices = do
+        let splices = mempty
+                {-
                 "json" ## bind "[\"<b>ok</b>\", 1, null, false, \"foo\"]"
                 "jsonObject" ##
                        (bind $ mconcat [
@@ -314,6 +317,7 @@ renderTest templateName expectedResult = do
                                 , "\"baz\": { \"baz1\": 1, \"baz2\": 2 }, "
                                 , "\"quux\": \"quux\" }"
                                 ])
+               -}
         let ts = bindSplices splices ts0
         Just (doc, _) <- renderTemplate ts templateName
         let result = B.filter (/= '\n') (toByteString doc)
