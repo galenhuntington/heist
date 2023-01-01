@@ -1,5 +1,6 @@
+cabal-version:  2.2
 name:           heist
-version:        1.2.2
+version:        1.2.3
 synopsis:       An Haskell template system supporting both HTML5 and XML.
 description:
     Heist is a powerful template system that supports both HTML5 and XML.
@@ -22,27 +23,25 @@ description:
     .
     * Optional merging of multiple \<head\> tags defined anywhere in the
       document
-license:        BSD3
+license:        BSD-3-Clause
 license-file:   LICENSE
 author:         Doug Beardsley, Gregory Collins
 maintainer:     snap@snapframework.com
 build-type:     Simple
-cabal-version:  >= 1.8.0.4
 homepage:       http://snapframework.com/
 category:       Web, Snap
 
-Tested-With:
-  GHC == 8.0.2,
-  GHC == 8.2.2,
-  GHC == 8.4.4,
+tested-with:
   GHC == 8.6.5,
   GHC == 8.8.4,
   GHC == 8.10.7,
   GHC == 9.0.2,
-  GHC == 9.2.3
+  GHC == 9.2.3,
+  GHC == 9.4.4
 
 extra-source-files:
   .ghci,
+  CHANGELOG.md,
   CONTRIBUTORS,
   docs/Makefile,
   docs/templates.css,
@@ -131,8 +130,28 @@ extra-source-files:
   test/templates-nscall/nscall.tpl,
   TODO
 
+common universal
+  default-language: Haskell2010
+
+  default-extensions:
+    DeriveDataTypeable
+    FlexibleInstances
+    GeneralizedNewtypeDeriving
+    MultiParamTypeClasses
+    OverloadedStrings
+    PackageImports
+    ScopedTypeVariables
+    TypeSynonymInstances
+
+  build-depends:
+    base >= 4.5 && < 4.18,
+
+  if !impl(ghc >= 8.0)
+    build-depends:
+      semigroups >= 0.16 && < 0.19,
 
 Library
+  import: universal
   hs-source-dirs: src
 
   exposed-modules:
@@ -160,9 +179,8 @@ Library
     Heist.Interpreted.Internal
 
   build-depends:
-    -- aeson                      >= 2.0     && < 2.1,
+    -- aeson                      >= 2.0     && < 2.2,
     attoparsec                 >= 0.10    && < 0.15,
-    base                       >= 4.5     && < 4.17,
     blaze-builder              >= 0.2     && < 0.5,
     blaze-html                 >= 0.4     && < 0.10,
     bytestring                 >= 0.9     && < 0.12,
@@ -178,27 +196,19 @@ Library
     mtl                        >= 2.0     && < 2.3,
     process                    >= 1.1     && < 1.7,
     random                     >= 1.2     && < 1.3,
-    text                       >= 0.10    && < 1.3,
+    text                       >= 0.10    && < 2.1,
     time                       >= 1.1     && < 1.14,
     transformers               >= 0.3     && < 0.7,
     transformers-base          >= 0.4     && < 0.5,
     unordered-containers       >= 0.1.4   && < 0.3,
     vector                     >= 0.9     && < 0.14,
-    xmlhtml                    >= 0.2.3.5 && < 0.3
+    xmlhtml                    >= 0.2.3.5 && < 0.4
 
   ghc-options: -Wall -fwarn-tabs -funbox-strict-fields
                -fno-warn-unused-do-bind
 
-  Extensions:
-    GeneralizedNewtypeDeriving,
-    PackageImports,
-    ScopedTypeVariables,
-    DeriveDataTypeable,
-    FlexibleInstances,
-    MultiParamTypeClasses,
+  default-extensions:
     UndecidableInstances,
-    OverloadedStrings,
-    TypeSynonymInstances,
     NoMonomorphismRestriction
 
 
@@ -207,6 +217,7 @@ source-repository head
   location: https://github.com/snapframework/heist.git
 
 Test-suite testsuite
+  import: universal
   hs-source-dirs: src test/suite
   type: exitcode-stdio-1.0
   main-is: TestSuite.hs
@@ -214,13 +225,12 @@ Test-suite testsuite
   build-depends:
     HUnit                      >= 1.2      && < 2,
     QuickCheck                 >= 2        && < 2.15,
-    lens                       >= 4.3      && < 5.2,
+    lens                       >= 4.3      && < 5.3,
     test-framework             >= 0.4      && < 0.9,
     test-framework-hunit       >= 0.2.7    && < 0.4,
     test-framework-quickcheck2 >= 0.2.12.1 && < 0.4,
     -- aeson,
     attoparsec,
-    base,
     bifunctors >= 5.3 && < 5.6,
     blaze-builder,
     blaze-html,
@@ -246,17 +256,17 @@ Test-suite testsuite
     xmlhtml
 
   ghc-options: -Wall -fwarn-tabs -funbox-strict-fields -threaded
-  Extensions: OverloadedStrings
 
 Benchmark benchmark
+  import: universal
   hs-source-dirs: src test/suite
   type: exitcode-stdio-1.0
   main-is: Benchmark.hs
 
   build-depends:
     HUnit,
-    criterion                 >= 1.0     && < 1.6,
-    criterion-measurement     >= 0.1     && < 0.2,
+    criterion                 >= 1.0,
+    criterion-measurement     >= 0.1,
     test-framework,
     test-framework-hunit,
 
@@ -264,7 +274,6 @@ Benchmark benchmark
 
     -- aeson,
     attoparsec,
-    base,
     blaze-builder,
     blaze-html,
     bytestring,
@@ -280,7 +289,7 @@ Benchmark benchmark
     mtl,
     process,
     random,
-    statistics                 >= 0.11    && < 0.17,
+    statistics                 >= 0.11,
     text,
     time,
     transformers,
@@ -292,14 +301,6 @@ Benchmark benchmark
   ghc-options: -Wall -fwarn-tabs -funbox-strict-fields -threaded
                -fno-warn-unused-do-bind -rtsopts
 
-  Extensions:
-    GeneralizedNewtypeDeriving,
-    PackageImports,
-    ScopedTypeVariables,
-    DeriveDataTypeable,
-    FlexibleInstances,
-    MultiParamTypeClasses,
+  default-extensions:
     UndecidableInstances,
-    OverloadedStrings,
-    TypeSynonymInstances,
     NoMonomorphismRestriction
