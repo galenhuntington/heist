@@ -35,7 +35,7 @@ loadWithCache baseDir = do
     etm <- runExceptT $ do
         let sc = SpliceConfig mempty defaultLoadTimeSplices mempty mempty
                               [loadTemplates baseDir] (const True)
-        ExceptT $ initHeistWithCacheTag $ HeistConfig sc "" False
+        ExceptT $ initHeistWithCacheTag $ HeistConfig sc "" False defaultKnownTags
     either (error . unlines) (return . fst) etm
 
 main = do
