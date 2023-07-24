@@ -28,64 +28,64 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        cabal: ["3.8.1.0"]
         ghc:
-          - "8.6.5"
-          - "8.8.4"
-          - "8.10.7"
-          - "9.0.2"
-          - "9.2.5"
-          - "9.4.4"
+          - "8.8"
+          - "8.10"
+          - "9.0"
+          - "9.2"
+          - "9.4"
+          - "9.6"
         include:
-          - { os: macOS-latest,   ghc: "9.4.4", cabal: "3.8.1.0" }
-          - { os: windows-latest, ghc: "9.4.4", cabal: "3.8.1.0" }
+          - { os: macOS-latest,   ghc: "9.6" }
+          - { os: windows-latest, ghc: "9.6" }
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup Haskell
-        uses: haskell/actions/setup@v2.0
-        id: setup-haskell-cabal
+      - name: Set up GHC ${{ matrix.ghc-version }}
+        uses: haskell/actions/setup@v2
+        id: setup
         with:
           ghc-version: ${{ matrix.ghc }}
-          cabal-version: ${{ matrix.cabal }}
 
       - name: Configure
         run: |
-          cabal configure --enable-tests --enable-benchmarks --enable-documentation --test-show-details=direct --write-ghc-environment-files=always
+          cabal configure --enable-tests --enable-benchmarks --enable-documentation
+          cabal build --dry-run
 
-      - name: Freeze
-        run: |
-          cabal freeze
-
-      - uses: actions/cache@v3
-        name: Cache
+      - name: Restore cached dependencies
+        uses: actions/cache/restore@v3
+        id: cache
+        env:
+          key: ${{ runner.os }}-ghc-${{ steps.setup.outputs.ghc-version }}-cabal-${{ steps.setup.outputs.cabal-version }}
         with:
-          path: |
-            ${{ steps.setup-haskell-cabal.outputs.cabal-store }}
-            dist-newstyle
-          key:          ${{ runner.os }}-${{ matrix.ghc }}-cabal-${{ hashFiles('cabal.project.freeze') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.ghc }}-cabal-
+          path: ${{ steps.setup.outputs.cabal-store }}
+          key: ${{ env.key }}-plan-${{ hashFiles('dist-newstyle/cache/plan.json') }}
+          restore-keys: ${{ env.key }}-
 
       - name: Install dependencies
-        run: |
-          cabal build all --only-dependencies
+        run: cabal build all --only-dependencies
+
+      - name: Save cached dependencies
+        uses: actions/cache/save@v3
+        if: ${{ steps.cache.outputs.cache-primary-key != steps.cache.outputs.cache-matched-key }}
+        with:
+          path: ${{ steps.setup.outputs.cabal-store }}
+          key: ${{ steps.cache.outputs.cache-primary-key }}
 
       - name: Build
-        run: |
-          cabal build all
+        run: cabal build all
 
       - uses: nikeee/setup-pandoc@v1
         if: matrix.os == 'ubuntu-latest'
       # Work is needed to get tests to pass on other OSes.
       - name: Test
         if: matrix.os == 'ubuntu-latest'
-        run: |
-          cabal test all
+        run: cabal test all
 
       - name: Documentation
-        run: |
-          cabal haddock
+        if: matrix.ghc >= '9.4'
+        run: cabal haddock
 
   stack:
     name: stack / ghc ${{ matrix.ghc }}
@@ -95,15 +95,15 @@ jobs:
       matrix:
         include:
           # GHC version must match https://www.stackage.org/nightly
-          - stack: "2.9.1"
-            ghc: "9.4.4"
+          - stack: "latest"
+            ghc: "9.6"
 
     steps:
       - uses: nikeee/setup-pandoc@v1
 
       - uses: actions/checkout@v3
 
-      - uses: haskell/actions/setup@v2.0
+      - uses: haskell/actions/setup@v2
         name: Setup Haskell Stack
         with:
           ghc-version: ${{ matrix.ghc }}
@@ -114,20 +114,17 @@ jobs:
           cat <<EOF > stack.yaml
             packages:
               - '.'
-            resolver: nightly-2022-11-08
+            resolver: nightly-2023-07-17
           EOF
           stack config set system-ghc true --global
           stack config set resolver nightly
-          stack ls dependencies > ci-stack-depends
 
       - uses: actions/cache@v3
         name: Cache
         with:
           path: |
             ~/.stack
-            stack-work
-          key:          ${{ runner.os }}-${{ matrix.ghc }}-stack-${{ hashFiles('ci-stack-depends') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.ghc }}-stack-
+          key: ${{ runner.os }}-${{ matrix.ghc }}-stack
 
       - name: Install dependencies
         run: |
