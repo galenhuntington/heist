@@ -1,6 +1,6 @@
 cabal-version:  2.2
 name:           heist
-version:        1.2.4
+version:        1.2.5
 synopsis:       An Haskell template system supporting both HTML5 and XML.
 description:
     Heist is a powerful template system that supports both HTML5 and XML.
@@ -196,7 +196,7 @@ Library
     mtl                        >= 2.0     && < 2.4,
     process                    >= 1.1     && < 1.7,
     random                     >= 1.2     && < 1.3,
-    text                       >= 0.10    && < 2.1,
+    text                       >= 0.10    && < 2.2,
     time                       >= 1.1     && < 1.13,
     transformers               >= 0.3     && < 0.7,
     transformers-base          >= 0.4     && < 0.5,
