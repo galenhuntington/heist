@@ -1,3 +1,12 @@
+# 1.1.1.2
+
+* Support GHC 9.8
+* Fix broken test
+
+# 1.1.1.1
+
+* Support GHC 9.6
+
 # 1.1.1.0
 
 * Expose `lookupTemplate` and `splitTemplatePath`

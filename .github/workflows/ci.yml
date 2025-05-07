@@ -26,6 +26,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest]
         ghc:
@@ -35,15 +36,17 @@ jobs:
           - "9.2"
           - "9.4"
           - "9.6"
+          - "9.8"
+          - "9.10"
         include:
-          - { os: macOS-latest,   ghc: "9.6" }
-          - { os: windows-latest, ghc: "9.6" }
+          - { os: macOS-latest,   ghc: "9.10" }
+          - { os: windows-latest, ghc: "9.10" }
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up GHC ${{ matrix.ghc-version }}
-        uses: haskell/actions/setup@v2
+        uses: haskell-actions/setup@v2
         id: setup
         with:
           ghc-version: ${{ matrix.ghc }}
@@ -54,7 +57,7 @@ jobs:
           cabal build --dry-run
 
       - name: Restore cached dependencies
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: cache
         env:
           key: ${{ runner.os }}-ghc-${{ steps.setup.outputs.ghc-version }}-cabal-${{ steps.setup.outputs.cabal-version }}
@@ -67,7 +70,7 @@ jobs:
         run: cabal build all --only-dependencies
 
       - name: Save cached dependencies
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         if: ${{ steps.cache.outputs.cache-primary-key != steps.cache.outputs.cache-matched-key }}
         with:
           path: ${{ steps.setup.outputs.cabal-store }}
@@ -77,10 +80,11 @@ jobs:
         run: cabal build all
 
       - uses: nikeee/setup-pandoc@v1
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'Linux'
+
       # Work is needed to get tests to pass on other OSes.
       - name: Test
-        if: matrix.os == 'ubuntu-latest'
+        if: runner.os == 'Linux'
         run: cabal test all
 
       - name: Documentation
@@ -96,15 +100,16 @@ jobs:
         include:
           # GHC version must match https://www.stackage.org/nightly
           - stack: "latest"
-            ghc: "9.6"
+            ghc: "9.8"
 
     steps:
       - uses: nikeee/setup-pandoc@v1
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: haskell/actions/setup@v2
+      - uses: haskell-actions/setup@v2
         name: Setup Haskell Stack
+        id: setup
         with:
           ghc-version: ${{ matrix.ghc }}
           stack-version: ${{ matrix.stack }}
@@ -119,12 +124,12 @@ jobs:
           stack config set system-ghc true --global
           stack config set resolver nightly
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         name: Cache
         with:
           path: |
             ~/.stack
-          key: ${{ runner.os }}-${{ matrix.ghc }}-stack
+          key: ${{ runner.os }}-${{ steps.setup.outputs.ghc-version }}-stack
 
       - name: Install dependencies
         run: |
