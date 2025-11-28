@@ -1,5 +1,7 @@
 This is an experimental modification of the Heist module to support
-errors for unbound tags even in the absence of namespacing.
+errors for unbound tags even in the absence of namespacing.  Also,
+I removed JSON support, because it hasn't been useful and `aeson`
+pulls in a huge dependency tree.
 
 
 # Heist
